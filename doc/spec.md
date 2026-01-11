@@ -21,20 +21,31 @@
 
 - game.py
   - Game クラスがアプリ全体を司るハブ。
-    - __init__: 画面初期化、フォント準備、`TestScene` を生成して保持。
+    - __init__: 画面初期化、フォント準備、`TitleScene` を生成して保持。
     - run: 現在のシーンの run を呼び、終了時に pygame.quit を実行。
-  - 依存: constants の解像度/FPS、TestScene。
+    - _on_game: タイトルの「ゲーム」押下時ハンドラ（print のみ）。
+    - _on_ai: 「AIテスト」押下時に TestScene を生成・実行し、print も行う。
+  - 依存: constants の解像度/FPS、TitleScene、TestScene。
+
+- Title.py
+  - タイトル画面で「ゲーム」「AIテスト」を選択し、コールバックを呼ぶ。
+  - 依存: ui, constants。
 
 - TestScene.py
   - シンプルな画像ビューアシーン。
-    - _load_assets_images: assets ディレクトリの png/jpg/jpeg/webp をソートして読み込み、最大 860x400 に収まるようアスペクト比を維持してスケール。
+    - _load_assets_images: assets/images ディレクトリの png/jpg/jpeg/webp をソートして読み込み、最大 860x400 に収まるようアスペクト比を維持してスケール。
     - run: メインループ。イベント処理→描画→FPS 制御。ウィンドウ閉じると終了。
     - _draw_layout: タイトル、表示パネル、画像（存在時は枚数インジケータ付き）を描画。前/次ボタンで巡回、参照ボタンで画像選択をトリガー。
-    - _choose_and_add_image: ファイルダイアログで画像を選択し、そのまま読み込んでリストへ追加して表示（保存なし）。
+    - _choose_and_add_image: ファイルダイアログで画像を選択し、assets/images に `image01`, `image02` ... の連番で保存してから読み込み、リストへ追加して表示。
   - 依存: assets.load_image, ui の描画関数群, constants。
 
 - main.py
   - エントリーポイント。Game を生成し run を呼ぶのみ。
+
+- ImageToText.py
+  - `image_to_text`: 画像パスを受け取り、メタ情報と Gemini 要約を `assets/imagetotext/<画像名>.json` に書き出す（既存があればスキップ）。
+  - `read_text_from_json`: 画像に対応する JSON を読み込み、リストを返す（無ければ空リスト）。
+  - 依存: pygame, os, mimetypes, json, google-generativeai（未導入時は要約スキップ）。
 
 ## User Flow
 1) 起動すると assets 配下の画像を読み込み、先頭を表示。

@@ -1,6 +1,7 @@
 import pygame
 
 from .constants import SCREEN_HEIGHT, SCREEN_WIDTH
+from .Scene.Title import TitleScene
 from .Scene.Test import TestScene
 
 
@@ -24,8 +25,27 @@ class Game:
         font = pygame.font.SysFont(jp_font_candidates, 24)
         title_font = pygame.font.SysFont(jp_font_candidates, 32)
 
-        self.scene = TestScene(self.screen, clock, font, title_font)
+        self.scene = TitleScene(
+            self.screen,
+            clock,
+            font,
+            title_font,
+            on_game=self._on_game,
+            on_ai=self._on_ai,
+        )
+        self._clock = clock
+        self._font = font
+        self._title_font = title_font
 
     def run(self) -> None:
         self.scene.run()
         pygame.quit()
+
+    def _on_game(self) -> None:
+        print("hello game")
+
+    def _on_ai(self) -> None:
+        print("hello AI")
+        # AIテストシーンに遷移
+        scene = TestScene(self.screen, self._clock, self._font, self._title_font)
+        scene.run()

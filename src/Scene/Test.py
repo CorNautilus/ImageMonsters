@@ -1,8 +1,11 @@
 import os
+import re
+import shutil
 import pygame
 from tkinter import Tk, filedialog
 
 from .. import assets
+from ..ImageToText import image_to_text, read_text_from_json
 from ..constants import FPS
 from ..ui import draw_button, draw_panel, draw_text, fill_background
 
@@ -14,7 +17,7 @@ class TestScene:
         self.font = font
         self.title_font = title_font
 
-        self.images = self._load_assets_images()
+        self.images, self.texts = self._load_assets_images()
         self.current_index = 0 if self.images else -1
 
         self.buttons = [
@@ -23,17 +26,20 @@ class TestScene:
             {"text": "参照", "rect": pygame.Rect(320, 520, 120, 44)},
         ]
 
-    def _load_assets_images(self) -> list[pygame.Surface]:
-        loaded: list[pygame.Surface] = []
-        assets_dir = os.path.join("assets")
+    def _load_assets_images(self) -> tuple[list[pygame.Surface], list[list[str]]]:
+        loaded_images: list[pygame.Surface] = []
+        loaded_texts: list[list[str]] = []
+        assets_dir = os.path.join("assets", "images")
         max_size = (860, 400)  # パネル内に収まるようにする最大サイズ
         if not os.path.isdir(assets_dir):
-            return loaded
+            return loaded_images, loaded_texts
         for fname in sorted(os.listdir(assets_dir)):
             if fname.lower().endswith((".png", ".jpg", ".jpeg", ".webp")):
                 path = os.path.join(assets_dir, fname)
-                loaded.append(assets.load_image(path, max_size))
-        return loaded
+                loaded_images.append(assets.load_image(path, max_size))
+                image_to_text(path)  # JSON生成（既存ならスキップ）
+                loaded_texts.append(read_text_from_json(path))
+        return loaded_images, loaded_texts
 
     def run(self) -> None:
         running = True
@@ -61,7 +67,7 @@ class TestScene:
 
         if self.current_index >= 0 and self.images:
             image = self.images[self.current_index]
-            img_rect = image.get_rect(center=viewer_panel.center)
+            img_rect = image.get_rect(center=(viewer_panel.x + 280, viewer_panel.y + 220))
             self.screen.blit(image, img_rect)
             draw_text(
                 self.screen,
@@ -69,6 +75,13 @@ class TestScene:
                 (viewer_panel.x + 12, viewer_panel.y + 12),
                 self.font,
             )
+
+            # テキスト情報を右側に表示
+            info_x = viewer_panel.x + 520
+            info_y = viewer_panel.y + 24
+            for line in self.texts[self.current_index]:
+                draw_text(self.screen, line, (info_x, info_y), self.font)
+                info_y += 24
         else:
             draw_text(self.screen, "assets フォルダに画像がありません", viewer_panel.center, self.font)
 
@@ -101,7 +114,34 @@ class TestScene:
         root.destroy()
         if not path:
             return
+        # assets 配下に保存（参照順に image01, image02 ... の連番で命名）
+        assets_dir = os.path.join("assets", "images")
+        os.makedirs(assets_dir, exist_ok=True)
+
+        ext = os.path.splitext(path)[1] or ".png"
+        next_index = self._next_image_index(assets_dir)
+        dest = os.path.join(assets_dir, f"image{next_index:02d}{ext}")
+        try:
+            shutil.copyfile(path, dest)
+        except OSError:
+            return
+
         max_size = (860, 400)
-        new_image = assets.load_image(path, max_size)
+        new_image = assets.load_image(dest, max_size)
+        image_to_text(dest)
         self.images.append(new_image)
+        self.texts.append(read_text_from_json(dest))
         self.current_index = len(self.images) - 1
+
+    def _next_image_index(self, assets_dir: str) -> int:
+        pattern = re.compile(r"^image(\d+)\.[^.]+$")
+        max_idx = 0
+        for fname in os.listdir(assets_dir):
+            m = pattern.match(fname.lower())
+            if m:
+                try:
+                    num = int(m.group(1))
+                    max_idx = max(max_idx, num)
+                except ValueError:
+                    continue
+        return max_idx + 1
