@@ -19,10 +19,10 @@
   - `buttons`: 「前へ」「次へ」ボタンの定義と矩形。
 - **メソッド**
   - `__init__(screen, clock, font, title_font)`: リソースを受け取り、画像読込とボタン設定を行う（前へ/次へ/参照）。
-  - `_load_assets_images() -> list[pygame.Surface]`: `assets/images/` の png/jpg/jpeg/webp をソートして読み込み、最大 860x400 に収まるようアスペクト比を維持してスケールしてリスト化。
+  - `_load_assets_images() -> list[pygame.Surface]`: `assets/` の png/jpg/jpeg/webp をソートして読み込み、最大 860x400 に収まるようアスペクト比を維持してスケールしてリスト化。
   - `run() -> None`: メインループ。QUIT と左クリックを処理し、背景塗り→レイアウト描画→flip→FPS tick。
   - `_draw_layout(mouse_pos, mouse_down) -> None`: タイトル、表示パネル、画像（存在時は枚数インジケータ付き）を描画。前/次ボタンで巡回、参照ボタンで画像選択をトリガー。
-  - `_choose_and_add_image() -> None`: ファイルダイアログで画像を選択し、`assets/images/` に `image01`, `image02` ... の連番で保存してから読み込み、リストへ追加して表示する。
+  - `_choose_and_add_image() -> None`: ファイルダイアログで画像を選択し、そのまま読み込んでリストへ追加して表示する（保存はしない）。
 
 ## 入出力
 - 入力: `assets/` の画像ファイル、マウスイベント。
