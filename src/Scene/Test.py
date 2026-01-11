@@ -1,9 +1,10 @@
 import os
 import pygame
+from tkinter import Tk, filedialog
 
-from . import assets
-from .constants import FPS
-from .ui import draw_button, draw_panel, draw_text, fill_background
+from .. import assets
+from ..constants import FPS
+from ..ui import draw_button, draw_panel, draw_text, fill_background
 
 
 class TestScene:
@@ -19,6 +20,7 @@ class TestScene:
         self.buttons = [
             {"text": "前へ", "rect": pygame.Rect(40, 520, 120, 44)},
             {"text": "次へ", "rect": pygame.Rect(180, 520, 120, 44)},
+            {"text": "参照", "rect": pygame.Rect(320, 520, 120, 44)},
         ]
 
     def _load_assets_images(self) -> list[pygame.Surface]:
@@ -79,8 +81,27 @@ class TestScene:
                 mouse_pos,
                 mouse_down,
             )
-            if clicked and self.images:
-                if idx == 0:
+            if clicked:
+                if idx == 0 and self.images:
                     self.current_index = (self.current_index - 1) % len(self.images)
-                else:
+                elif idx == 1 and self.images:
                     self.current_index = (self.current_index + 1) % len(self.images)
+                elif idx == 2:
+                    self._choose_and_add_image()
+
+    def _choose_and_add_image(self) -> None:
+        root = Tk()
+        root.withdraw()
+        root.attributes('-topmost', True)
+        filetypes = [
+            ("Image files", ("*.png", "*.jpg", "*.jpeg", "*.webp")),
+            ("All files", "*.*"),
+        ]
+        path = filedialog.askopenfilename(title="画像を選択", filetypes=filetypes)
+        root.destroy()
+        if not path:
+            return
+        max_size = (860, 400)
+        new_image = assets.load_image(path, max_size)
+        self.images.append(new_image)
+        self.current_index = len(self.images) - 1

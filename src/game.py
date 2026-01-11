@@ -1,7 +1,7 @@
 import pygame
 
 from .constants import SCREEN_HEIGHT, SCREEN_WIDTH
-from .TestScene import TestScene
+from .Scene.Test import TestScene
 
 
 class Game:
@@ -10,8 +10,19 @@ class Game:
         self.screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
         pygame.display.set_caption("Image Viewer - Pygame")
         clock = pygame.time.Clock()
-        font = pygame.font.SysFont(None, 24)
-        title_font = pygame.font.SysFont(None, 32)
+
+        # 日本語表示に対応したフォントを優先して取得（見つからなければデフォルト）
+        jp_font_candidates = [
+            "meiryo",
+            "ms gothic",
+            "msgothic",
+            "yu gothic",
+            "ms pgothic",
+            "ms ui gothic",
+            "arial unicode ms",
+        ]
+        font = pygame.font.SysFont(jp_font_candidates, 24)
+        title_font = pygame.font.SysFont(jp_font_candidates, 32)
 
         self.scene = TestScene(self.screen, clock, font, title_font)
 
