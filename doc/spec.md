@@ -21,9 +21,15 @@
 
 - game.py
   - Game クラスがアプリ全体を司るハブ。
-    - __init__: 画面初期化、フォント準備、`TestScene` を生成して保持。
+    - __init__: 画面初期化、フォント準備、`TitleScene` を生成して保持。
     - run: 現在のシーンの run を呼び、終了時に pygame.quit を実行。
-  - 依存: constants の解像度/FPS、TestScene。
+    - _on_game: タイトルの「ゲーム」押下時ハンドラ（print のみ）。
+    - _on_ai: 「AIテスト」押下時に TestScene を生成・実行し、print も行う。
+  - 依存: constants の解像度/FPS、TitleScene、TestScene。
+
+- Title.py
+  - タイトル画面で「ゲーム」「AIテスト」を選択し、コールバックを呼ぶ。
+  - 依存: ui, constants。
 
 - TestScene.py
   - シンプルな画像ビューアシーン。

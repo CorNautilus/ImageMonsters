@@ -10,14 +10,12 @@
 
 ## クラス
 ### `TestScene`
-- **属性**
   - `screen`: 描画先の Pygame サーフェス。
   - `clock`: FPS 制御用の Pygame Clock。
   - `font`, `title_font`: テキスト描画用フォント。
   - `images`: 読み込んだ画像サーフェスのリスト。
   - `current_index`: 現在表示している画像インデックス（画像なしは -1）。
   - `buttons`: 「前へ」「次へ」ボタンの定義と矩形。
-- **メソッド**
   - `__init__(screen, clock, font, title_font)`: リソースを受け取り、画像読込とボタン設定を行う（前へ/次へ/参照）。
   - `_load_assets_images() -> list[pygame.Surface]`: `assets/images/` の png/jpg/jpeg/webp をソートして読み込み、最大 860x400 に収まるようアスペクト比を維持してスケールしてリスト化。
   - `run() -> None`: メインループ。QUIT と左クリックを処理し、背景塗り→レイアウト描画→flip→FPS tick。

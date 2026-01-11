@@ -15,8 +15,10 @@
   - `screen`: `SCREEN_WIDTH/SCREEN_HEIGHT` サイズのメインサーフェス。
   - `scene`: 現在アクティブなシーンインスタンス（現状 `TestScene`）。
 - **メソッド**
-  - `__init__()`: Pygame 初期化、画面・時計・フォント生成、`TestScene` を生成して保持。
+  - `__init__()`: Pygame 初期化、画面・時計・フォント生成、`TitleScene` を生成して保持。
   - `run() -> None`: シーンの `run()` を実行し、終了後に `pygame.quit()` を呼ぶ。
+  - `_on_game()`: 「ゲーム」ボタン押下時のハンドラ（現状 print のみ）。
+  - `_on_ai()`: 「AIテスト」押下時のハンドラ（print 後に `TestScene` を生成・実行）。
 
 ## 入出力
 - 入力: なし（シーン側に委譲）。
