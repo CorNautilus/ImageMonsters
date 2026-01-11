@@ -3,3 +3,6 @@ Include/
 Lib/
 Scripts/
 pyvenv.cfg
+assets/
+src/__pycache__/
+src/Scene/__pycache__/
